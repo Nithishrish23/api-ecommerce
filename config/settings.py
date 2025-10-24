@@ -3,7 +3,7 @@ class Config:
     SECRET_KEY = "pclinfo"
     MAX_CONTENT_LENGTH = 100 * 1024 * 1024
     UPLOAD_FOLDER= os.path.join(r'uploads')
-    DB_NAME = "postgres"
+    DB_NAME = "ecom"
     DB_USER = "postgres"
     DB_PASSWORD = "CDfW6x7AI2yIm7tb"
     DB_HOST = "db.nbchszbhkckcoyxguqvg.supabase.co"

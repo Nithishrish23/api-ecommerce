@@ -1,0 +1,76 @@
+-- Trigger Function: sync_product_selling
+CREATE FUNCTION public.sync_product_selling() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    -- Insert a new row in product_selling when a row is inserted in add_product
+    IF TG_OP = 'INSERT' THEN
+        INSERT INTO product_selling (id)
+        VALUES (NEW.pid);
+
+    -- Update the row in product_selling when a row is updated in add_product
+    ELSIF TG_OP = 'UPDATE' THEN
+        UPDATE product_selling
+        SET id = NEW.pid
+        WHERE id = OLD.pid;
+
+    -- Delete the corresponding row in product_selling when a row is deleted in add_product
+    ELSIF TG_OP = 'DELETE' THEN
+        DELETE FROM product_selling
+        WHERE id = OLD.pid;
+    END IF;
+
+    RETURN NULL;
+END;
+$$;
+
+-- Create Trigger for sync_product_selling
+CREATE TRIGGER trg_sync_product_selling
+AFTER INSERT OR UPDATE OR DELETE ON public.add_product
+FOR EACH ROW EXECUTE FUNCTION public.sync_product_selling();
+
+
+-- Trigger Function: sync_product_status_on_delete
+CREATE FUNCTION public.sync_product_status_on_delete() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    -- Delete the corresponding record from product_status
+    DELETE FROM product_status WHERE pid = OLD.pid;
+
+    RETURN OLD;
+END;
+$$;
+
+-- Create Trigger for sync_product_status_on_delete
+CREATE TRIGGER trg_sync_product_status_on_delete
+AFTER DELETE ON public.add_product
+FOR EACH ROW EXECUTE FUNCTION public.sync_product_status_on_delete();
+
+
+-- Trigger Function: sync_product_status_on_insert_update
+CREATE FUNCTION public.sync_product_status_on_insert_update() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    INSERT INTO product_status (pid, userid, active_status, is_featured)
+    VALUES (NEW.pid, NEW.userid, FALSE, FALSE)
+    ON CONFLICT (pid) DO UPDATE
+    SET
+        userid = EXCLUDED.userid,
+        active_status = TRUE,
+        is_featured = TRUE;
+
+    RETURN NEW;
+END;
+$$;
+
+-- Create Trigger for sync_product_status_on_insert_update
+CREATE TRIGGER trg_sync_product_status_on_insert_update
+AFTER INSERT OR UPDATE ON public.add_product
+FOR EACH ROW EXECUTE FUNCTION public.sync_product_status_on_insert_update();
+
+
+INSERT INTO product_status (pid, userid, active_status, is_featured)
+SELECT pid, userid, FALSE, FALSE FROM add_product;
+

@@ -213,6 +213,9 @@ blueprint = Blueprint("routes", __name__)
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), r"uploads")
 
+@blueprint.route("/", methods=["GET","POST"])
+def home_page():
+    return "<h1>Welcome</h1>
 
 @blueprint.route("/uploads/media", methods=["GET", "POST"])
 def media_files_route():

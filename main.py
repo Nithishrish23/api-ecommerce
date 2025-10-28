@@ -2,6 +2,7 @@ from app import create_app
 from flask import Flask, request, make_response
 from app.license_validator import license_validator
 import sys
+import os
 
 # Validate license before starting the server
 if not license_validator.validate_license("your-license-key"):

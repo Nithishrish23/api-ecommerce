@@ -28,7 +28,7 @@ class LicenseValidator:
 
 # Example allowed hashed ID (replace with your hashed DEPLOYMENT_ID)
 ALLOWED_CPU_IDS = [
-    "c0a23a8593e7f835eb8f7a88dbfdad8b60db31cbf82e32b6ffcd9a2aaab78810"
+    "43431a85f73e77b25a980853a087b4189ae4e5e11c3b142f830b9132ccd19ab7"
 ]
 
 license_validator = LicenseValidator(ALLOWED_CPU_IDS)

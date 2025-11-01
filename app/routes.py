@@ -304,7 +304,6 @@ def user_route(user_id):
 
 @blueprint.route("/register-seller", methods=["GET", "POST"])
 @cross_origin()
-@token_required
 def seller_register():
     return handle_seller_registration()
 

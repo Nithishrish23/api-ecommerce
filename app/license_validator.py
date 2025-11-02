@@ -20,7 +20,6 @@ class LicenseValidator:
                 print(f"Error getting CPU ID: {e}")
                 sys.exit(1)
         else:
-            # Get CPU ID on Linux/Unix systems
             try:
                 with open('/proc/cpuinfo', 'r') as f:
                     for line in f:
@@ -48,20 +47,16 @@ class LicenseValidator:
                 print("Invalid CPU ID. This system is not licensed to run the server.")
                 return False
                 
-            # Additional license key validation can be added here
-            # For example, checking expiration date, features, etc.
-            
             return True
             
         except Exception as e:
             print(f"Error validating license: {e}")
             return False
 
-# List of allowed CPU IDs (hashed)
+
 ALLOWED_CPU_IDS = [
     # Your system's CPU ID
     "0f8359ffdbe92cd4fa0b9a468bd1e427034ab40bae06d43c58f3c2a90ff6019f"
 ]
 
-# Create a global instance
 license_validator = LicenseValidator(ALLOWED_CPU_IDS)       

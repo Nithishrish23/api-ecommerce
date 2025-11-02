@@ -740,39 +740,59 @@ def get_seller_dashboard_data(userid):
 def get_admin_dashboard_data():
     try:
         conn = get_db_connection()
-        cursor = conn.cursor()
-        # Example: Get global order stats
-        cursor.execute('''SELECT 
-            SUM(CASE WHEN status = 'Pending' THEN 1 ELSE 0 END) AS pending,
-            SUM(CASE WHEN status = 'Confirmed' THEN 1 ELSE 0 END) AS confirmed,
-            SUM(CASE WHEN status = 'Packaging' THEN 1 ELSE 0 END) AS packaging,
-            SUM(CASE WHEN status = 'Out For Delivery' THEN 1 ELSE 0 END) AS out_for_delivery,
-            SUM(CASE WHEN status = 'Delivered' THEN 1 ELSE 0 END) AS delivered,
-            SUM(CASE WHEN status = 'Canceled' THEN 1 ELSE 0 END) AS canceled,
-            SUM(CASE WHEN status = 'Returned' THEN 1 ELSE 0 END) AS returned,
-            SUM(CASE WHEN status = 'Failed To Delivery' THEN 1 ELSE 0 END) AS failed_to_delivery
-            FROM orders''')
-        order_stats = cursor.fetchone()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-        # Example: Global wallet stats (replace with your actual logic)
-        cursor.execute('''SELECT 
-            COALESCE(SUM(balance), 0) AS withdrawable_balance,
-            COALESCE(SUM(pending_withdraw), 0) AS pending_withdraw,
-            COALESCE(SUM(already_withdrawn), 0) AS already_withdrawn,
-            COALESCE(SUM(tax_given), 0) AS total_tax_given,
-            COALESCE(SUM(commission_given), 0) AS total_commission_given,
-            COALESCE(SUM(delivery_charge_earned), 0) AS total_delivery_charge_earned
-            FROM seller_wallet''')
-        wallet_stats = cursor.fetchone()
+        # Global order stats
+        cursor.execute('''
+            SELECT status, COUNT(*) as count
+            FROM orders
+            GROUP BY status
+        ''')
+        order_stats_raw = cursor.fetchall()
+        order_stats = [{'title': row['status'], 'count': row['count']} for row in order_stats_raw]
 
-        # Example: Top products (replace with your actual logic)
-        cursor.execute('''SELECT product_name, total_sales FROM products ORDER BY total_sales DESC LIMIT 5''')
-        top_products = cursor.fetchall()
+        # Global wallet stats
+        cursor.execute('''
+            SELECT 
+                COALESCE(SUM(balance), 0) AS withdrawable_balance,
+                COALESCE(SUM(pending_withdraw), 0) AS pending_withdraw,
+                COALESCE(SUM(already_withdrawn), 0) AS already_withdrawn
+            FROM seller_wallet
+        ''')
+        wallet_stats_raw = cursor.fetchone()
+        wallet_stats = [
+            {'title': 'Withdrawable Balance', 'amount': wallet_stats_raw['withdrawable_balance']},
+            {'title': 'Pending Withdraw', 'amount': wallet_stats_raw['pending_withdraw']},
+            {'title': 'Already Withdrawn', 'amount': wallet_stats_raw['already_withdrawn']}
+        ]
+
+        # Top selling products
+        cursor.execute('''
+            SELECT pid, product_name as name, current_stock_qty as sold_quantity, unit_price as price, product_thumbnail as image 
+            FROM add_product 
+            ORDER BY current_stock_qty DESC 
+            LIMIT 5
+        ''')
+        top_selling = cursor.fetchall()
+
+        # Most popular products
+        cursor.execute('''
+            SELECT pid, product_name as name, current_stock_qty as sold_quantity, unit_price as price, product_thumbnail as image 
+            FROM add_product 
+            ORDER BY unit_price DESC 
+            LIMIT 5
+        ''')
+        most_popular = cursor.fetchall()
+
+        top_products = {
+            'most_popular': most_popular,
+            'top_selling': top_selling
+        }
 
         data = {
             'order_stats': order_stats,
             'wallet_stats': wallet_stats,
-            'top_products': [dict(zip([desc[0] for desc in cursor.description], row)) for row in top_products]
+            'top_products': top_products
         }
         return jsonify(data), 200
     except Exception as e:

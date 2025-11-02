@@ -36,3 +36,4 @@ if __name__ == "__main__":
         print("\nAdd this hashed CPU ID to the ALLOWED_CPU_IDS list in license_validator.py to authorize this system.")
     else:
         print("Failed to retrieve CPU ID")
+

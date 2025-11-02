@@ -1,6 +1,6 @@
 from app import create_app
 from flask import Flask, request, make_response
-from app.license_validator import license_validator
+# from app.license_validator import license_validator
 import sys
 import os
 from flask_cors import CORS

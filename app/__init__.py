@@ -13,13 +13,7 @@ def create_app():
 
     # Session(app)
 
-    CORS(app, supports_credentials=True, resources={
-        r"/*": {
-            "origins": ["https://ecom-admin-liard.vercel.app", "http://localhost:5173", "http://localhost:5174", "http://localhost:5175"],
-            "allow_headers": ["Content-Type", "Authorization", "Access-Control-Allow-Origin"],
-            "methods": ["OPTIONS", "GET", "POST", "PUT", "DELETE"]
-        }
-    })
+    CORS(app)
     with app.app_context():
         app.register_blueprint(blueprint)
 

@@ -11,7 +11,7 @@ from flask_cors import CORS
 #     sys.exit(1)
 
 app = create_app()
-CORS(app)
+CORS(app, supports_credentials=True)
 
 
 if __name__ == "__main__":

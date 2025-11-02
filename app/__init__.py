@@ -13,7 +13,7 @@ def create_app():
 
     # Session(app)
 
-    CORS(app)
+    CORS(app,supports_credentials=True)
     with app.app_context():
         app.register_blueprint(blueprint)
 

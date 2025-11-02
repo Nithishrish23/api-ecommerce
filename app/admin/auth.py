@@ -5,7 +5,6 @@ from app.database import get_db_connection, verify_user, verify_admin_user
 from psycopg2.extras import RealDictCursor
 from werkzeug.utils import secure_filename
 
-
 def get_product_status():
     try:
         conn = get_db_connection()

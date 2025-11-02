@@ -59,4 +59,8 @@ ALLOWED_CPU_IDS = [
     "0f8359ffdbe92cd4fa0b9a468bd1e427034ab40bae06d43c58f3c2a90ff6019f"
 ]
 
+<<<<<<< HEAD
 license_validator = LicenseValidator(ALLOWED_CPU_IDS)       
+=======
+license_validator = LicenseValidator(ALLOWED_CPU_IDS)       
+>>>>>>> 3e32fcab45e2833b65e20d6a3bf1cf24ce2d8a7a

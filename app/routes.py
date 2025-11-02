@@ -213,6 +213,23 @@ blueprint = Blueprint("routes", __name__)
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), r"uploads")
 
+@blueprint.route("/", methods=["GET","POST"])
+def home_page():
+    import bcrypt
+    import os
+    import psycopg2
+    
+    def create_password(password):
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+        return hashed_password.decode('utf-8')
+    
+    # Example usage:
+    password = "Admin@123"
+    hashed_password = create_password(password)
+    print(hashed_password)
+
+    return f"<h1>Welcome {hashed_password}</h1>"
 
 @blueprint.route("/uploads/media", methods=["GET", "POST"])
 def media_files_route():
